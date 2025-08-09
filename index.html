@@ -3,42 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>なぞかけメーカー</title>
-<meta name="description" content="お題を入れると『◯◯と掛けまして、△△と解きます。その心はどちらも□□でしょう。』を自動生成します。">
+<title>なぞかけ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* Recruitサイトを意識したクリーンなブルー系 */
-  --bg:#f6f9ff;
-  --ink:#1f2937;
-  --muted:#6b7280;
-  --line:#e5e7eb;
-  --white:#fff;
-  --blue:#2563eb;
-  --blue-700:#1d4ed8;
-  --blue-soft:#eff6ff;
+  --bg:#f6f9ff; --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --white:#fff;
+  --blue:#2563eb; --blue-700:#1d4ed8; --blue-soft:#eff6ff; --radius:16px;
   --shadow:0 10px 24px rgba(15,23,42,.06), 0 2px 6px rgba(15,23,42,.05);
-  --radius:16px;
 }
-*{box-sizing:border-box}
-html,body{margin:0}
+*{box-sizing:border-box} html,body{margin:0}
 body{
-  background:
-    radial-gradient(900px 500px at 100% -20%, #fff 0%, #f3f7ff 60%, #eef2ff 100%) fixed,
-    var(--bg);
-  color:var(--ink);
-  font-family:"Zen Kaku Gothic New", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
-  line-height:1.75;
+  background:radial-gradient(900px 500px at 100% -20%,#fff 0%,#f3f7ff 60%,#eef2ff 100%) fixed;
+  color:var(--ink); font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif; line-height:1.75;
 }
 .header{max-width:1120px;margin:0 auto;padding:28px 20px 8px;display:flex;gap:12px;align-items:center}
 .logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--white);border:1px solid var(--line);box-shadow:var(--shadow)}
 .logo::before{content:"語";font-family:"Noto Serif JP",serif;font-weight:700;color:var(--blue);font-size:22px;letter-spacing:.06em}
 .title{margin:0;font-family:"Noto Serif JP",serif;font-weight:700;font-size:clamp(18px,2.6vw,24px);letter-spacing:.08em}
-.container{max-width:980px;margin:0 auto;padding:16px 20px 80px}
+.container{max-width:880px;margin:0 auto;padding:16px 20px 80px}
 .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
-
 .grid{display:grid;grid-template-columns:1.3fr .7fr;gap:14px}
 @media (max-width:760px){.grid{grid-template-columns:1fr}}
 label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
@@ -47,26 +32,19 @@ input[type="text"],select{
 }
 input[type="text"]:focus,select:focus{border-color:#bfd2ff;box-shadow:0 0 0 4px var(--blue-soft)}
 .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
-.btn{
-  appearance:none;cursor:pointer;border-radius:999px;border:1px solid transparent;
-  padding:12px 20px;font-weight:700;letter-spacing:.02em;transition:.15s;
-}
-.btn-primary{background:var(--blue);color:#fff}
-.btn-primary:hover{background:var(--blue-700)}
+.btn{appearance:none;cursor:pointer;border-radius:999px;border:1px solid transparent;padding:12px 20px;font-weight:700;letter-spacing:.02em;transition:.15s}
+.btn-primary{background:var(--blue);color:#fff}.btn-primary:hover{background:var(--blue-700)}
 .btn-ghost{background:#fff;color:var(--blue);border-color:#c7d2fe}
-
 .out{margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;min-height:72px}
-.piece{padding:10px 12px;border-bottom:1px dashed var(--line)}
-.piece:last-child{border-bottom:none}
+.piece{padding:10px 12px;border-bottom:1px dashed var(--line)} .piece:last-child{border-bottom:none}
 .small{color:var(--muted);font-size:12px}
-.badge{color:#15803d;font-weight:700}
 .footer{margin-top:28px;color:var(--muted);font-size:12px;text-align:center}
 </style>
 </head>
 <body>
   <header class="header">
     <div class="logo" aria-hidden="true"></div>
-    <h1 class="title">なぞかけメーカー</h1>
+    <h1 class="title">なぞかけ</h1>
   </header>
 
   <main class="container">
@@ -78,16 +56,14 @@ input[type="text"]:focus,select:focus{border-color:#bfd2ff;box-shadow:0 0 0 4px 
         </div>
         <div>
           <label for="count">生成数</label>
-          <select id="count">
-            <option>1</option><option selected>3</option><option>5</option><option>10</option><option>20</option>
-          </select>
+          <select id="count"><option>1</option><option selected>3</option><option>5</option><option>10</option><option>20</option></select>
         </div>
       </div>
 
       <div class="actions">
-        <button id="btnMake" class="btn btn-primary">なぞかけを作る</button>
-        <button id="btnShuffle" class="btn btn-ghost">お題ランダム</button>
-        <span class="small"><span id="stat"></span></span>
+        <button id="make" class="btn btn-primary">作る</button>
+        <button id="random" class="btn btn-ghost">お題ランダム</button>
+        <span class="small" id="stat"></span>
       </div>
 
       <div id="out" class="out" aria-live="polite"></div>
@@ -97,126 +73,155 @@ input[type="text"]:focus,select:focus{border-color:#bfd2ff;box-shadow:0 0 0 4px 
   </main>
 
 <script>
-/* -------------------------------------------------------
-   仕様
-   〇〇 … ユーザー入力 or ランダム
-   △△ / ●● … 同音語グループから自動で2語（異なる語）を選ぶ
-   型  … 「◯◯と掛けまして、△△と解きます。その心はどちらも●●でしょう。」
-   ------------------------------------------------------- */
-
-/* ランダムお題（入力空なら使う） */
-const TOPICS = ["寿司","京都","野球","ゲーム","温泉","花火","ラーメン","新幹線","映画","写真","桜","キャンプ","宇宙","AI","スマホ","神社","お城","英語","受験","ギター","ピアノ","コーヒー","筋トレ","満員電車"];
-
-/* ▼同音異義グループ
-   形式: ["読み","語1","語2","語3"...]
-   ここでは軽量に “数百語・数千通り” を同梱。
-   本当に大規模化する場合は packs.json を分割ロードして拡張（下の fetchPacks() を使用）。
+/* ───────── ここだけ編集すれば増やせる ─────────
+  追加ルール： { clue:"△△のヒント（意味の説明＋（漢字））", heart:"同じ読み（かな）" }
+  例：{ clue:"食事で使うもの（箸）", heart:"はし" }
+  ※「clue」は“△△”、カッコ内は答えの表記ヒント。「heart」は“●●（読み）”
 */
-const PACKS_BASE = [
-  ["はし","橋","箸","端"],
-  ["かみ","髪","神","紙"],
-  ["あめ","雨","飴"],
-  ["かえる","帰る","変える","替える","換える","蛙"],
-  ["こうか","効果","硬貨","校歌","降下","高価"],
-  ["きかん","期間","器官","機関","基幹"],
-  ["しんこう","進行","信仰","新興","振興","深耕"],
-  ["たいしょう","対象","対照","大将","大正"],
-  ["どうこう","瞳孔","同行","動向"],
-  ["きしょう","気象","希少","起床","記章"],
-  ["へいこう","平行","並行","閉校","閉口"],
-  ["けっこう","結構","血行","欠航"],
-  ["せいかい","正解","政界","盛会","世界(近音)"],
-  ["しんせい","申請","新生","神聖"],
-  ["こうよう","紅葉","効用","公用"],
-  ["はる","春","張る","貼る"],
-  ["まつ","待つ","松","末"],
-  ["みる","見る","診る","観る"],
-  ["あう","会う","合う","遭う"],
-  ["おり","檻","折り","織り"],
-  ["なる","鳴る","成る","生る"],
-  ["さとう","佐藤","砂糖"],
-  ["はな","花","鼻","華"],
-  ["つき","月","付き","突き"],
-  ["かど","角","門"],
-  ["かこう","加工","下降","火口"],
-  ["こうしょう","交渉","高尚","工匠","校章"],
-  ["しゅっせき","出席","出石"],
-  ["ひょうか","評価","氷菓"],
-  ["かんじ","漢字","感じ","幹事"],
-  ["てんさい","天才","天災","甜菜"],
-  ["けいこう","傾向","蛍光","傾向"],
-  // …必要に応じて増やしてOK
+const DATA = [
+  {clue:"川に架かるもの（橋）", heart:"はし"},
+  {clue:"食事で使う道具（箸）", heart:"はし"},
+  {clue:"物のはしっこ（端）", heart:"はし"},
+
+  {clue:"神社で拝む対象（神）", heart:"かみ"},
+  {clue:"頭に生えるもの（髪）", heart:"かみ"},
+  {clue:"メモに使う材料（紙）", heart:"かみ"},
+
+  {clue:"空から降るもの（雨）", heart:"あめ"},
+  {clue:"舐めて甘い菓子（飴）", heart:"あめ"},
+
+  {clue:"効き目（効果）", heart:"こうか"},
+  {clue:"丸いお金（硬貨）", heart:"こうか"},
+  {clue:"学校にある歌（校歌）", heart:"こうか"},
+  {clue:"下へ向かう動き（降下）", heart:"こうか"},
+
+  {clue:"前へ進めること（進行）", heart:"しんこう"},
+  {clue:"信じて崇めること（信仰）", heart:"しんこう"},
+  {clue:"新しく興ること（新興）", heart:"しんこう"},
+
+  {clue:"ターゲットになるもの（対象）", heart:"たいしょう"},
+  {clue:"比べ合わせること（対照）", heart:"たいしょう"},
+  {clue:"部隊の長（大将）", heart:"たいしょう"},
+  {clue:"明治の次の元号（大正）", heart:"たいしょう"},
+
+  {clue:"目の中心の黒いところ（瞳孔）", heart:"どうこう"},
+  {clue:"一緒に行くこと（同行）", heart:"どうこう"},
+  {clue:"物事の流れ（動向）", heart:"どうこう"},
+
+  {clue:"天気・気候のこと（気象）", heart:"きしょう"},
+  {clue:"珍しく少ないこと（希少）", heart:"きしょう"},
+  {clue:"朝に起きること（起床）", heart:"きしょう"},
+  {clue:"胸につけるしるし（記章）", heart:"きしょう"},
+
+  {clue:"飛行機が出ないこと（欠航）", heart:"けっこう"},
+  {clue:"血の巡り（血行）", heart:"けっこう"},
+  {clue:"十分で良いさま（結構）", heart:"けっこう"},
+
+  {clue:"交わらない二直線（平行）", heart:"へいこう"},
+  {clue:"同時に進めること（並行）", heart:"へいこう"},
+  {clue:"困って言葉が出ない（閉口）", heart:"へいこう"},
+
+  {clue:"役所に出す手続き（申請）", heart:"しんせい"},
+  {clue:"新しく生まれ変わること（新生）", heart:"しんせい"},
+  {clue:"けがれなく尊いさま（神聖）", heart:"しんせい"},
+
+  {clue:"秋に色づく葉（紅葉）", heart:"こうよう"},
+  {clue:"役に立つ働き（効用）", heart:"こうよう"},
+  {clue:"公の用事（公用）", heart:"こうよう"},
+
+  {clue:"四季のひとつ（春）", heart:"はる"},
+  {clue:"ピンと伸ばす（張る）", heart:"はる"},
+  {clue:"シールを付ける（貼る）", heart:"はる"},
+
+  {clue:"順番を待つこと（待つ）", heart:"まつ"},
+  {clue:"常緑の樹木（松）", heart:"まつ"},
+  {clue:"終わりのほう（末）", heart:"まつ"},
+
+  {clue:"目で認識する（見る）", heart:"みる"},
+  {clue:"医者が診察する（診る）", heart:"みる"},
+  {clue:"映画や舞台を鑑賞する（観る）", heart:"みる"},
+
+  {clue:"人に会う（会う）", heart:"あう"},
+  {clue:"ぴったり一致する（合う）", heart:"あう"},
+  {clue:"思わぬ出来事に遭遇する（遭う）", heart:"あう"},
+
+  {clue:"折り目をつけること（折り）", heart:"おり"},
+  {clue:"布を織ること（織り）", heart:"おり"},
+
+  {clue:"鐘やベルが鳴る（鳴る）", heart:"なる"},
+  {clue:"物事が完成する（成る）", heart:"なる"},
+  {clue:"実ができる（生る）", heart:"なる"},
+
+  {clue:"よくある苗字（佐藤）", heart:"さとう"},
+  {clue:"甘味料（砂糖）", heart:"さとう"},
+
+  {clue:"植物の咲く部分（花）", heart:"はな"},
+  {clue:"顔の真ん中の器官（鼻）", heart:"はな"},
+  {clue:"華やかさ（華）", heart:"はな"},
+
+  {clue:"夜空の天体（月）", heart:"つき"},
+  {clue:"おまけとして添える（付き）", heart:"つき"},
+  {clue:"前へ突き出す動作（突き）", heart:"つき"},
+
+  {clue:"曲がり角（角）", heart:"かど"},
+  {clue:"出入り口（門）", heart:"かど"},
+
+  {clue:"材料に手を加える（加工）", heart:"かこう"},
+  {clue:"下に向かう（下降）", heart:"かこう"},
+  {clue:"火山の噴出口（火口）", heart:"かこう"},
+
+  {clue:"話し合いで合意を目指す（交渉）", heart:"こうしょう"},
+  {clue:"気高く上品（高尚）", heart:"こうしょう"},
+  {clue:"ものづくりの職人（工匠）", heart:"こうしょう"},
+  {clue:"制服につく学校の紋章（校章）", heart:"こうしょう"},
+
+  {clue:"価値を決めること（評価）", heart:"ひょうか"},
+  {clue:"冷たい甘味（氷菓）", heart:"ひょうか"},
+
+  {clue:"表意文字（漢字）", heart:"かんじ"},
+  {clue:"印象・フィーリング（感じ）", heart:"かんじ"},
+  {clue:"宴会の取りまとめ役（幹事）", heart:"かんじ"},
+
+  {clue:"スポーツをする人（選手）", heart:"せんしゅ"},
+  {clue:"一つ前の週（先週）", heart:"せんしゅ"},
+
+  {clue:"非常に優れた才能（天才）", heart:"てんさい"},
+  {clue:"自然の災害（天災）", heart:"てんさい"},
+  {clue:"ビートという作物（甜菜）", heart:"てんさい"},
+
+  {clue:"物事の傾きの方向（傾向）", heart:"けいこう"},
+  {clue:"光を発する現象（蛍光）", heart:"けいこう"},
+  {clue:"軽工業の略（軽工）", heart:"けいこう"},
+
+  {clue:"街角の警察施設（交番）", heart:"こうばん"},
+  {clue:"学校での当番（校番）", heart:"こうばん"}
 ];
 
-/* packs.json など外部拡張読み込み（巨大語彙用の入口） */
-async function fetchPacks() {
-  try {
-    // もしリポジトリに /packs.json を置いたら以下を有効化
-    // const res = await fetch('packs.json', {cache:'no-store'});
-    // if(res.ok){ const extra = await res.json(); return extra; }
-  } catch(e){}
-  return [];
-}
+/* ここまでが編集エリア ───────────────────── */
 
+const TOPICS = ["寿司","京都","野球","ゲーム","温泉","花火","ラーメン","新幹線","映画","写真","桜","キャンプ","宇宙","AI","スマホ","神社","お城","英語","受験","ギター","ピアノ","コーヒー","筋トレ","満員電車"];
 const $ = s => document.querySelector(s);
-const choice = arr => arr[Math.floor(Math.random()*arr.length)];
+const rand = a => a[Math.floor(Math.random()*a.length)];
+const randomTopic = ()=> rand(TOPICS);
 
-function randomTopic(){ return choice(TOPICS); }
-
-/* グループ => ランダムに2語（異なる語）を返す */
-function pickTwoDifferent(words){
-  if(words.length < 2) return null;
-  const a = choice(words);
-  let b = choice(words);
-  let guard = 0;
-  while(b === a && guard++ < 10) b = choice(words);
-  return a===b ? null : [a,b];
+function line(topic, entry){
+  return `「${topic}」と掛けまして、「${entry.clue}」と解きます。その心はどちらも『${entry.heart}』でしょう。`;
+}
+function render(){
+  const t = ($("#topic").value||"").trim() || randomTopic();
+  $("#topic").value = t;
+  const n = parseInt($("#count").value,10)||3;
+  const out = Array.from({length:n}, ()=> line(t, rand(DATA)));
+  $("#out").innerHTML = out.map(s=>`<div class="piece">${s}</div>`).join("");
+  $("#stat").textContent = `候補 ${DATA.length}件`;
 }
 
-/* 型に落とし込む */
-function buildLine(topic, a, b){
-  // a を △△、b を ●● に割当て
-  return `「${topic}」と掛けまして、「${a}」と解きます。その心はどちらも「${b}」でしょう。`;
-}
-
-/* 生成 */
-function make(topic, n, groups){
-  const out = [];
-  for(let i=0;i<n;i++){
-    const g = choice(groups);
-    const pair = pickTwoDifferent(g.slice(1));
-    if(!pair){ i--; continue; }
-    const [a,b] = pair;
-    out.push( buildLine(topic, a, b) );
-  }
-  return out;
-}
-
-/* UI */
-async function init(){
-  const extra = await fetchPacks();           // 外部巨大語彙（あれば）
-  const GROUPS = [...PACKS_BASE, ...extra];   // マージ
-
+window.addEventListener("DOMContentLoaded", ()=>{
+  $("#make").addEventListener("click", render);
+  $("#random").addEventListener("click", ()=>{ $("#topic").value = randomTopic(); });
   $("#topic").value = randomTopic();
-  $("#stat").textContent = `語彙グループ: ${GROUPS.length.toLocaleString()} / 組合せの目安: 数千〜数万通り`;
-
-  const render = ()=>{
-    const topic = ($("#topic").value || "").trim() || randomTopic();
-    $("#topic").value = topic;
-    const count = parseInt($("#count").value,10) || 3;
-    const list = make(topic, count, GROUPS);
-    $("#out").innerHTML = list.map(s=>`<div class="piece">${s}</div>`).join("");
-  };
-
-  $("#btnMake").addEventListener("click", render);
-  $("#btnShuffle").addEventListener("click", ()=>{
-    $("#topic").value = randomTopic();
-  });
-
-  // 初回
   render();
-}
-window.addEventListener("DOMContentLoaded", init);
+});
 </script>
 </body>
 </html>
