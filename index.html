@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>同音異義 なぞかけメーカー</title>
+<style>
+  :root{--ink:#222;--paper:#fffef9;--line:#ece6d9;--accent:#b23a2f}
+  *{box-sizing:border-box} body{margin:0;background:#f6f3ea;color:var(--ink);font-family:-apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;line-height:1.8}
+  header{padding:20px 16px;border-bottom:1px solid var(--line);background:linear-gradient(#fffef9,#f7f4ea)}
+  h1{margin:0;font-size:22px}
+  main{max-width:860px;margin:0 auto;padding:16px}
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.05);margin:12px 0;overflow:hidden}
+  .panel-body{padding:16px}
+  label{display:block;font-size:.9rem;color:#6b6453;margin:6px 0}
+  input,select,button{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:16px}
+  .grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
+  @media (max-width:640px){.grid{grid-template-columns:1fr}}
+  .btn{cursor:pointer;font-weight:700}
+  .btn-main{background:linear-gradient(#c9473b,#a7332a);color:#fff;border:none}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media (max-width:640px){.cards{grid-template-columns:1fr}}
+  .card{position:relative;border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px 14px 52px}
+  .actions{position:absolute;left:12px;right:12px;bottom:12px;display:flex;gap:8px}
+  .action{flex:1;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}
+  .history{list-style:none;margin:0;padding:10px;border-top:1px dashed #eee}
+  .history li{padding:6px 0;border-bottom:1px solid #f1ecdf}
+  small{color:#7b7466}
+</style>
+</head>
+<body>
+<header>
+  <h1>同音異義 なぞかけメーカー</h1>
+  <small>お題 × 同音異義で「その心は」を作るジェネレーター（ブラウザ完結）</small>
+</header>
+
+<main>
+  <section class="panel">
+    <div class="panel-body">
+      <label>お題</label>
+      <input id="theme" placeholder="例：夏祭り / 財布 / サラダ" />
+      <div class="grid" style="margin-top:10px">
+        <div>
+          <label>テイスト</label>
+          <select id="style">
+            <option value="classic">王道</option>
+            <option value="surprise">意外性</option>
+            <option value="short">ショート</option>
+            <option value="wafu">和風</option>
+          </select>
+        </div>
+        <div>
+          <label>本数</label>
+          <select id="count">
+            <option>1</option><option selected>3</option><option>5</option><option>10</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:flex-end">
+          <button class="btn btn-main" id="generate">整える</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-body">
+      <h3 style="margin-top:0">できたて</h3>
+      <div id="results" class="cards"></div>
+    </div>
+    <ul id="history" class="history"></ul>
+  </section>
+
+  <section class="panel">
+    <div class="panel-body">
+      <details>
+        <summary>カスタム同音異義を追加（かな・表記・“△△”候補）</summary>
+        <div class="grid" style="margin-top:10px">
+          <div>
+            <label>読み（かな）</label>
+            <input id="kana" placeholder="例：せいか" />
+          </div>
+          <div>
+            <label>表記１</label>
+            <input id="varA" placeholder="例：聖火" />
+          </div>
+          <div>
+            <label>表記２</label>
+            <input id="varB" placeholder="例：青果" />
+          </div>
+        </div>
+        <div class="grid" style="margin-top:10px">
+          <div>
+            <label>“△△”（解の例）</label>
+            <input id="subjectB" placeholder="例：オリンピックの開会式" />
+          </div>
+          <div style="display:flex;align-items:flex-end">
+            <button id="addPair" class="btn">追加</button>
+          </div>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <footer style="text-align:center;margin:20px 0">
+    <small>© 2025 なぞかけメーカー｜表現はオリジナルでどうぞ。</small>
+  </footer>
+</main>
+
+<script>
+/* ---- 同音異義データ ---- */
+const STOCK = {
+  "せいか": { variants:["聖火","青果","成果"], subjectB:["オリンピックの開会式","八百屋さんの店先","決算の数字が並ぶ紙"] },
+  "かみ":   { variants:["紙","神","髪"],       subjectB:["コピー用紙売り場","神社のご利益","美容室の仕上がり"] },
+  "はし":   { variants:["箸","橋"],           subjectB:["和食のテーブルマナー","川に架かるランドマーク"] },
+  "かう":   { variants:["買う","飼う"],       subjectB:["ショッピングの予定","ペットとの暮らし"] },
+  "あう":   { variants:["会う","合う"],       subjectB:["同窓会の集合","サイズ感のチェック"] },
+  "はる":   { variants:["春","貼る"],         subjectB:["桜の季節","ラベルの作業"] },
+  "まつ":   { variants:["待つ","松"],         subjectB:["バス停の行列","正月の門飾り"] },
+  "かえる": { variants:["帰る","換える","蛙"], subjectB:["終電ダッシュ","SIMの入れ替え","田んぼの合唱"] },
+  "しょうか": { variants:["消火","消化"],     subjectB:["消防訓練","焼肉のあと"] },
+  "たいしょう": { variants:["対象","大将","大賞"], subjectB:["マーケのペルソナ","寿司屋のカウンター","授賞式のステージ"] }
+};
+
+/* ---- 文テンプレ ---- */
+const TEMPLATES = {
+  classic:[
+    "{A}とかけまして、{B}と解きます。 その心は…「{PUNCH}」。",
+    "『{A}』とかけて『{B}』と解く。 その心は「{PUNCH}」。"
+  ],
+  surprise:[
+    "{A}とかけまして、あえて『{B}』と解きます。 その心は「{PUNCH}」。",
+    "意外や意外、『{A}』とかけて『{B}』と解くと…心は「{PUNCH}」。"
+  ],
+  short:[
+    "{A}×{B} → 「{PUNCH}」。",
+    "{A}とかけて{B}と解く → 心は「{PUNCH}」。"
+  ],
+  wafu:[
+    "{A}と掛け、『{B}』と解く。心は「{PUNCH}」。",
+    "題『{A}』。解『{B}』。心は「{PUNCH}」。"
+  ]
+};
+
+/* ---- ユーティリティ ---- */
+const KEY="nazokake_history_v3";
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const loadH = () => JSON.parse(localStorage.getItem(KEY)||"[]");
+const saveH = arr => localStorage.setItem(KEY, JSON.stringify(arr.slice(0,50)));
+const formatPunch = (v)=>{ const main=v[0]; const others=v.slice(1).join("／"); return `${main}（${others}）`; };
+
+function buildCard(text){
+  const wrap=document.createElement("div"); wrap.className="card";
+  const p=document.createElement("p"); p.textContent=text; wrap.appendChild(p);
+  const actions=document.createElement("div"); actions.className="actions";
+  const copyBtn=document.createElement("button"); copyBtn.className="action"; copyBtn.textContent="コピー";
+  copyBtn.onclick=()=>{navigator.clipboard.writeText(text); copyBtn.textContent="コピー済み"; setTimeout(()=>copyBtn.textContent="コピー",1200);};
+  const share=document.createElement("a"); share.className="action"; share.textContent="Xで共有"; share.target="_blank"; share.rel="noopener";
+  share.href="https://twitter.com/intent/tweet?text="+encodeURIComponent(text);
+  actions.appendChild(copyBtn); actions.appendChild(share); wrap.appendChild(actions);
+  return wrap;
+}
+
+function renderHistory(){
+  const ul=document.getElementById("history"); ul.innerHTML="";
+  const h=loadH(); if(!h.length){ ul.innerHTML='<li>まだありません。「整える」を押してみてください。</li>'; return; }
+  h.forEach(t=>{ const li=document.createElement("li"); li.textContent=t; ul.appendChild(li); });
+}
+
+/* ---- 生成 ---- */
+function generate(){
+  const theme=(document.getElementById("theme").value||"").trim();
+  const style=document.getElementById("style").value;
+  const count=parseInt(document.getElementById("count").value,10);
+  if(!theme){ alert("お題を入れてください"); return; }
+
+  const out=[];
+  for(let i=0;i<count;i++){
+    const key=pick(Object.keys(STOCK));
+    const e=STOCK[key];
+    const variants=[...e.variants];
+    // 先頭を回す（どれが表に来るかでニュアンスを変える）
+    for(let r=0;r<Math.floor(Math.random()*variants.length);r++){ variants.push(variants.shift()); }
+    const punch=formatPunch(variants);
+    const B=pick(e.subjectB);
+    const tmp=pick(TEMPLATES[style]);
+    out.push( tmp.replaceAll("{A}", theme).replaceAll("{B}", B).replaceAll("{PUNCH}", punch) );
+  }
+
+  const results=document.getElementById("results"); results.innerHTML="";
+  out.forEach(t=>results.appendChild(buildCard(t)));
+
+  // 履歴
+  const h=loadH(); out.concat().reverse().forEach(t=>h.unshift(t)); saveH(h); renderHistory();
+}
+
+/* ---- カスタム登録 ---- */
+function addPair(){
+  const kana=(document.getElementById("kana").value||"").trim();
+  const a=(document.getElementById("varA").value||"").trim();
+  const b=(document.getElementById("varB").value||"").trim();
+  const sb=(document.getElementById("subjectB").value||"").trim();
+  if(!kana||!a||!b||!sb){ alert("読み・表記２つ・“△△”候補を入れてください"); return; }
+  if(!STOCK[kana]) STOCK[kana]={variants:[a,b],subjectB:[sb]};
+  else{
+    if(!STOCK[kana].variants.includes(a)) STOCK[kana].variants.push(a);
+    if(!STOCK[kana].variants.includes(b)) STOCK[kana].variants.push(b);
+    if(!STOCK[kana].subjectB.includes(sb)) STOCK[kana].subjectB.push(sb);
+  }
+  alert("追加しました。整えてみてください。");
+  ["kana","varA","varB","subjectB"].forEach(id=>document.getElementById(id).value="");
+}
+
+/* ---- イベント ---- */
+document.getElementById("generate").addEventListener("click", generate);
+document.getElementById("addPair").addEventListener("click", addPair);
+renderHistory();
+</script>
+</body>
+</html>
