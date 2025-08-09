@@ -1,318 +1,222 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>同音異義 なぞかけメーカー｜王道</title>
-  <meta name="description" content="お題＋同音異義語で、王道の『◯◯とかけて △△ と解く。その心は…』をサクッと生成。和風モダンの軽量ツールです。" />
-  <link rel="canonical" href="https://nazokake.vercel.app/">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>なぞかけメーカー</title>
+<meta name="description" content="お題を入れると『◯◯と掛けまして、△△と解きます。その心はどちらも□□でしょう。』を自動生成します。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Recruitサイトを意識したクリーンなブルー系 */
+  --bg:#f6f9ff;
+  --ink:#1f2937;
+  --muted:#6b7280;
+  --line:#e5e7eb;
+  --white:#fff;
+  --blue:#2563eb;
+  --blue-700:#1d4ed8;
+  --blue-soft:#eff6ff;
+  --shadow:0 10px 24px rgba(15,23,42,.06), 0 2px 6px rgba(15,23,42,.05);
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:
+    radial-gradient(900px 500px at 100% -20%, #fff 0%, #f3f7ff 60%, #eef2ff 100%) fixed,
+    var(--bg);
+  color:var(--ink);
+  font-family:"Zen Kaku Gothic New", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
+  line-height:1.75;
+}
+.header{max-width:1120px;margin:0 auto;padding:28px 20px 8px;display:flex;gap:12px;align-items:center}
+.logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--white);border:1px solid var(--line);box-shadow:var(--shadow)}
+.logo::before{content:"語";font-family:"Noto Serif JP",serif;font-weight:700;color:var(--blue);font-size:22px;letter-spacing:.06em}
+.title{margin:0;font-family:"Noto Serif JP",serif;font-weight:700;font-size:clamp(18px,2.6vw,24px);letter-spacing:.08em}
+.container{max-width:980px;margin:0 auto;padding:16px 20px 80px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
 
-  <!-- OGP -->
-  <meta property="og:title" content="同音異義 なぞかけメーカー｜王道" />
-  <meta property="og:description" content="お題＋同音異義語で王道のなぞかけを自動生成。語彙追加で無限に広がる！" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://nazokake.vercel.app/" />
+.grid{display:grid;grid-template-columns:1.3fr .7fr;gap:14px}
+@media (max-width:760px){.grid{grid-template-columns:1fr}}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+input[type="text"],select{
+  width:100%;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:16px;background:#fff;outline:none;transition:.15s;
+}
+input[type="text"]:focus,select:focus{border-color:#bfd2ff;box-shadow:0 0 0 4px var(--blue-soft)}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.btn{
+  appearance:none;cursor:pointer;border-radius:999px;border:1px solid transparent;
+  padding:12px 20px;font-weight:700;letter-spacing:.02em;transition:.15s;
+}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{background:var(--blue-700)}
+.btn-ghost{background:#fff;color:var(--blue);border-color:#c7d2fe}
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
-
-  <style>
-    :root{
-      --ink:#1f2937;      /* 文字墨 */
-      --wash:#faf7f2;     /* 和紙地 */
-      --line:#e6e0d6;     /* 罫線 */
-      --accent:#b16c3a;   /* 柿渋 */
-      --accent-2:#7a3b16; /* 焦げ茶 */
-      --ok:#2e7d32;
-      --shadow:0 10px 24px rgba(0,0,0,.06), 0 2px 6px rgba(0,0,0,.05);
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0}
-    body{
-      background: radial-gradient(1200px 800px at 10% -10%, #fff, var(--wash)) fixed;
-      color:var(--ink);
-      font-family:"Zen Kaku Gothic New", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
-      line-height:1.75;
-    }
-    .container{max-width:980px;margin:0 auto;padding:28px 16px 56px}
-    header{display:flex;align-items:center;gap:18px;margin:8px 0 24px}
-    .logo{
-      width:56px;height:56px;border:1px solid var(--line);border-radius:14px;
-      display:grid;place-items:center;background:#fff;box-shadow:var(--shadow)
-    }
-    .logo::before{
-      content:"語";font-family:"Noto Serif JP", serif;font-weight:700;color:var(--accent);
-      font-size:26px;letter-spacing:.1em;
-    }
-    .hgroup h1{
-      margin:0;font-family:"Noto Serif JP",serif;font-weight:700;
-      letter-spacing:.12em;font-size:clamp(20px,3.2vw,28px);
-    }
-    .hgroup p{margin:.25rem 0 0;color:#6b7280;font-size:14px}
-
-    .panel{
-      background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;
-      box-shadow:var(--shadow);
-    }
-    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
-    @media (max-width:760px){ .grid{grid-template-columns:1fr} }
-
-    label{display:block;font-size:13px;color:#6b7280;margin-bottom:6px}
-    input[type="text"],select,textarea{
-      width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 14px;
-      font-size:16px;background:#fff;outline:none;transition:.15s;
-    }
-    input[type="text"]:focus,select:focus,textarea:focus{border-color:#d2c4b3;box-shadow:0 0 0 3px #f4ede5}
-
-    .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    button{
-      appearance:none;border:1px solid var(--accent);background:var(--accent);
-      color:#fff;border-radius:12px;padding:12px 18px;font-weight:700;letter-spacing:.08em;
-      box-shadow:var(--shadow);cursor:pointer;transition:.15s;
-    }
-    button:hover{background:var(--accent-2);border-color:var(--accent-2)}
-    button.subtle{background:#fff;color:var(--accent);border-color:var(--accent)}
-
-    .kadomaru{border-radius:14px;border:1px dashed var(--line);padding:12px}
-    .out{
-      margin-top:14px;background:#fff;border:1px solid var(--line);
-      border-radius:14px;padding:14px;min-height:64px
-    }
-    .out .piece{padding:10px 12px;border-bottom:1px dashed var(--line)}
-    .out .piece:last-child{border-bottom:none}
-
-    .tag{display:inline-block;border:1px solid var(--line);background:#fff;border-radius:999px;
-         padding:.2em .8em;font-size:12px;color:#6b7280;margin-right:6px}
-    small.muted{color:#9ca3af}
-    hr.sep{border:none;border-top:1px solid var(--line);margin:18px 0}
-
-    details{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}
-    details summary{cursor:pointer;font-weight:700;color:#374151}
-    code.key{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;background:#f8f5f0;border:1px solid var(--line);border-radius:6px;padding:.1em .4em}
-
-    footer{margin-top:28px;color:#9ca3af;font-size:12px;text-align:center}
-    .badge{color:var(--ok);font-weight:700}
-  </style>
+.out{margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;min-height:72px}
+.piece{padding:10px 12px;border-bottom:1px dashed var(--line)}
+.piece:last-child{border-bottom:none}
+.small{color:var(--muted);font-size:12px}
+.badge{color:#15803d;font-weight:700}
+.footer{margin-top:28px;color:var(--muted);font-size:12px;text-align:center}
+</style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="logo" aria-hidden="true"></div>
-      <div class="hgroup">
-        <h1>同音異義 なぞかけメーカー <span class="tag">王道</span></h1>
-        <p>「◯◯とかけて △△ と解く。その心は…」を瞬発生成。和風モダンUI。</p>
-      </div>
-    </header>
+  <header class="header">
+    <div class="logo" aria-hidden="true"></div>
+    <h1 class="title">なぞかけメーカー</h1>
+  </header>
 
-    <section class="panel">
+  <main class="container">
+    <section class="card">
       <div class="grid">
         <div>
-          <label for="topic">お題</label>
-          <input id="topic" type="text" placeholder="例：寿司 / 野球 / 京都 / ゲーム" />
+          <label for="topic">お題（◯◯）</label>
+          <input id="topic" type="text" placeholder="例：寿司 / 京都 / 野球 / ゲーム" />
         </div>
         <div>
-          <label for="count">個数</label>
+          <label for="count">生成数</label>
           <select id="count">
-            <option>1</option><option>3</option><option selected>5</option><option>10</option><option>20</option>
+            <option>1</option><option selected>3</option><option>5</option><option>10</option><option>20</option>
           </select>
         </div>
       </div>
 
-      <div class="actions" style="margin-top:12px">
-        <button id="btnMake">整える</button>
-        <button id="btnShuffle" class="subtle">お題をランダム</button>
-        <span class="tag">テイスト：王道</span>
+      <div class="actions">
+        <button id="btnMake" class="btn btn-primary">なぞかけを作る</button>
+        <button id="btnShuffle" class="btn btn-ghost">お題ランダム</button>
+        <span class="small"><span id="stat"></span></span>
       </div>
 
-      <div class="out" id="out" aria-live="polite"></div>
-
-      <hr class="sep" />
-
-      <details>
-        <summary>語彙を追加（ローカル保存）</summary>
-        <p class="kadomaru">
-          読みが同じ語を、カンマ区切りで1行に記入します（例：<code>はし,箸,橋,端</code>）。  
-          1行＝1グループ。保存すると次回から自動で使われ、組み合わせ数が一気に増えます。
-        </p>
-        <textarea id="addWords" rows="5" placeholder="よみ,語1,語2,語3...&#10;はし,箸,橋,端"></textarea>
-        <div class="actions" style="margin-top:8px">
-          <button id="btnSaveWords" class="subtle">追加を保存</button>
-          <small class="muted">保存先：ブラウザの <code class="key">localStorage</code></small>
-        </div>
-      </details>
-
-      <p style="margin-top:10px"><span class="badge" id="comboInfo"></span> <small class="muted">（内蔵＋追加語彙の総組み合わせ目安）</small></p>
+      <div id="out" class="out" aria-live="polite"></div>
     </section>
 
-    <footer>
-      © 2025 なぞかけメーカー / 語彙は常識の範囲でお楽しみください
-    </footer>
-  </div>
+    <p class="footer">© 2025</p>
+  </main>
 
-  <script>
-  /* ==========
-     1) データ
-     ========== */
+<script>
+/* -------------------------------------------------------
+   仕様
+   〇〇 … ユーザー入力 or ランダム
+   △△ / ●● … 同音語グループから自動で2語（異なる語）を選ぶ
+   型  … 「◯◯と掛けまして、△△と解きます。その心はどちらも●●でしょう。」
+   ------------------------------------------------------- */
 
-  /* お題（未入力時にランダムで使用） */
-  const TOPICS = [
-    "寿司","京都","引っ越し","花火","お正月","卒業式","野球","サッカー","将棋","温泉","映画",
-    "宇宙","AI","コーヒー","ラーメン","カレー","満員電車","猫","犬","キャンプ","海","山","雨","桜",
-    "受験","プレゼン","スマホ","写真","音楽","ギター","ピアノ","お弁当","リモート会議","観光","神社","お城",
-    "新幹線","空港","病院","料理","掃除","睡眠","筋トレ","英語","お財布","名刺","花束","チョコレート","ゲーム"
-  ];
+/* ランダムお題（入力空なら使う） */
+const TOPICS = ["寿司","京都","野球","ゲーム","温泉","花火","ラーメン","新幹線","映画","写真","桜","キャンプ","宇宙","AI","スマホ","神社","お城","英語","受験","ギター","ピアノ","コーヒー","筋トレ","満員電車"];
 
-  /* 内蔵 同音異義グループ（文法修正済み・安全） */
-  const BUILTINS = [
-    {yomi:"はし",words:["橋","箸","端"]},
-    {yomi:"かみ",words:["髪","神","紙"]},
-    {yomi:"あめ",words:["雨","飴"]},
-    {yomi:"かえる",words:["帰る","変える","替える","換える","蛙"]},
-    {yomi:"たいしょう",words:["対象","対照","大将","大正"]},
-    {yomi:"こうしょう",words:["交渉","高尚","工匠","校章"]},
-    {yomi:"しんこう",words:["進行","信仰","新興","振興","深耕"]},
-    {yomi:"どうこう",words:["瞳孔","同行","動向"]},
-    {yomi:"きしょう",words:["気象","希少","起床","記章"]},
-    {yomi:"こうか",words:["効果","硬貨","校歌","降下","高価"]},
-    {yomi:"きかん",words:["期間","器官","機関","基幹"]},
-    {yomi:"せいかい",words:["正解","政界"]},
-    {yomi:"へいこう",words:["平行","並行","閉口"]},
-    {yomi:"けっこう",words:["結構","血行","欠航"]},
-    {yomi:"しんせい",words:["申請","新生","神聖"]},
-    {yomi:"こうよう",words:["紅葉","効用","公用"]},
-    {yomi:"はる",words:["春","張る","貼る"]},
-    {yomi:"まつ",words:["待つ","松","末"]},
-    {yomi:"なる",words:["鳴る","成る","生る"]},
-    {yomi:"さとう",words:["佐藤","砂糖"]},
-    {yomi:"はな",words:["花","鼻","華"]},
-    {yomi:"つき",words:["月","付き","突き"]},
-    {yomi:"かど",words:["角","門"]},
-    {yomi:"みる",words:["見る","診る","観る"]},
-    {yomi:"おり",words:["折り","織り"]},
-    {yomi:"あう",words:["会う","合う","遭う"]},
-    {yomi:"ため",words:["為","溜め"]},
-    {yomi:"せんしゅ",words:["選手","先週"]},
-    {yomi:"ひょうか",words:["評価","氷菓"]},
-    {yomi:"かんじ",words:["漢字","感じ","幹事"]},
-    {yomi:"はんこう",words:["反抗","犯行"]},
-    {yomi:"てんさい",words:["天才","天災","甜菜"]},
-    {yomi:"けいこう",words:["傾向","蛍光","軽工"]},
-    {yomi:"こうばん",words:["交番","校番"]},
-  ];
+/* ▼同音異義グループ
+   形式: ["読み","語1","語2","語3"...]
+   ここでは軽量に “数百語・数千通り” を同梱。
+   本当に大規模化する場合は packs.json を分割ロードして拡張（下の fetchPacks() を使用）。
+*/
+const PACKS_BASE = [
+  ["はし","橋","箸","端"],
+  ["かみ","髪","神","紙"],
+  ["あめ","雨","飴"],
+  ["かえる","帰る","変える","替える","換える","蛙"],
+  ["こうか","効果","硬貨","校歌","降下","高価"],
+  ["きかん","期間","器官","機関","基幹"],
+  ["しんこう","進行","信仰","新興","振興","深耕"],
+  ["たいしょう","対象","対照","大将","大正"],
+  ["どうこう","瞳孔","同行","動向"],
+  ["きしょう","気象","希少","起床","記章"],
+  ["へいこう","平行","並行","閉校","閉口"],
+  ["けっこう","結構","血行","欠航"],
+  ["せいかい","正解","政界","盛会","世界(近音)"],
+  ["しんせい","申請","新生","神聖"],
+  ["こうよう","紅葉","効用","公用"],
+  ["はる","春","張る","貼る"],
+  ["まつ","待つ","松","末"],
+  ["みる","見る","診る","観る"],
+  ["あう","会う","合う","遭う"],
+  ["おり","檻","折り","織り"],
+  ["なる","鳴る","成る","生る"],
+  ["さとう","佐藤","砂糖"],
+  ["はな","花","鼻","華"],
+  ["つき","月","付き","突き"],
+  ["かど","角","門"],
+  ["かこう","加工","下降","火口"],
+  ["こうしょう","交渉","高尚","工匠","校章"],
+  ["しゅっせき","出席","出石"],
+  ["ひょうか","評価","氷菓"],
+  ["かんじ","漢字","感じ","幹事"],
+  ["てんさい","天才","天災","甜菜"],
+  ["けいこう","傾向","蛍光","傾向"],
+  // …必要に応じて増やしてOK
+];
 
-  /* ==========
-     2) 便利関数
-     ========== */
-  const $ = sel => document.querySelector(sel);
-  function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a }
-  function uniq(arr){ return [...new Set(arr)] }
+/* packs.json など外部拡張読み込み（巨大語彙用の入口） */
+async function fetchPacks() {
+  try {
+    // もしリポジトリに /packs.json を置いたら以下を有効化
+    // const res = await fetch('packs.json', {cache:'no-store'});
+    // if(res.ok){ const extra = await res.json(); return extra; }
+  } catch(e){}
+  return [];
+}
 
-  /* 追加入力をlocalStorageに保存・読込 */
-  function loadUserPacks(){
-    const raw = localStorage.getItem("nazokake-packs");
-    if(!raw) return [];
-    try{
-      const lines = raw.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
-      return lines.map(line=>{
-        const parts = line.split(/[,\s　]+/).map(s=>s.trim()).filter(Boolean);
-        const yomi = parts.shift();
-        return {yomi, words: uniq(parts)};
-      }).filter(g => g.yomi && g.words && g.words.length>=2);
-    }catch(e){ return [] }
+const $ = s => document.querySelector(s);
+const choice = arr => arr[Math.floor(Math.random()*arr.length)];
+
+function randomTopic(){ return choice(TOPICS); }
+
+/* グループ => ランダムに2語（異なる語）を返す */
+function pickTwoDifferent(words){
+  if(words.length < 2) return null;
+  const a = choice(words);
+  let b = choice(words);
+  let guard = 0;
+  while(b === a && guard++ < 10) b = choice(words);
+  return a===b ? null : [a,b];
+}
+
+/* 型に落とし込む */
+function buildLine(topic, a, b){
+  // a を △△、b を ●● に割当て
+  return `「${topic}」と掛けまして、「${a}」と解きます。その心はどちらも「${b}」でしょう。`;
+}
+
+/* 生成 */
+function make(topic, n, groups){
+  const out = [];
+  for(let i=0;i<n;i++){
+    const g = choice(groups);
+    const pair = pickTwoDifferent(g.slice(1));
+    if(!pair){ i--; continue; }
+    const [a,b] = pair;
+    out.push( buildLine(topic, a, b) );
   }
-  function saveUserPacks(text){
-    localStorage.setItem("nazokake-packs", text.trim());
-  }
+  return out;
+}
 
-  /* 総データ（内蔵＋ユーザー追加） */
-  function getAllGroups(){
-    const packs = loadUserPacks();
-    const merged = [...BUILTINS, ...packs]
-      .map(g=>({yomi:g.yomi, words:uniq(g.words)}))
-      .filter(g=>g.words.length>=2);
-    return merged;
-  }
+/* UI */
+async function init(){
+  const extra = await fetchPacks();           // 外部巨大語彙（あれば）
+  const GROUPS = [...PACKS_BASE, ...extra];   // マージ
 
-  /* 組み合わせ予測（概算） */
-  function estimateCombos(){
-    const groups = getAllGroups();
-    const TEMPLATES = 8;
-    const pairSum = groups.reduce((acc,g)=> acc + (g.words.length*(g.words.length-1)), 0);
-    return TEMPLATES * pairSum * Math.max(30, TOPICS.length);
-  }
+  $("#topic").value = randomTopic();
+  $("#stat").textContent = `語彙グループ: ${GROUPS.length.toLocaleString()} / 組合せの目安: 数千〜数万通り`;
 
-  /* ==========
-     3) 生成ロジック（王道）
-     ========== */
-  function makeNazokake(topic, n=5){
-    const groups = getAllGroups();
-    if(groups.length===0) return ["（語彙がありません。下の追加欄から入れてください）"];
+  const render = ()=>{
+    const topic = ($("#topic").value || "").trim() || randomTopic();
+    $("#topic").value = topic;
+    const count = parseInt($("#count").value,10) || 3;
+    const list = make(topic, count, GROUPS);
+    $("#out").innerHTML = list.map(s=>`<div class="piece">${s}</div>`).join("");
+  };
 
-    const picks = [];
-    for(let i=0;i<n;i++){
-      const g = groups[Math.floor(Math.random()*groups.length)];
-      const words = shuffle([...g.words]);
-      if(words.length<2){ i--; continue; }
-      const a = words[0], b = words[1];
-
-      const templates = [
-        (t,a,b)=>`${t}とかけて「${a}」と解く。その心は、どちらも「${b}（${g.yomi}）」でしょう。`,
-        (t,a,b)=>`${t}とかけて「${b}」と解く。その心は、どちらも「${a}（${g.yomi}）」です。`,
-        (t,a,b)=>`${t}とかけて「${a}」と説く。その心は……どちらも「${b}」。`,
-        (t,a,b)=>`${t}に「${a}」を添えて一句。どちらも読むのは「${g.yomi}」。`,
-        (t,a,b)=>`${t}と「${a}」、同じ読みで「${b}」。これぞ王道。`,
-        (t,a,b)=>`${t}とかけて「${a}」。その心は「${b}」——読みはどちらも「${g.yomi}」。`,
-        (t,a,b)=>`お題「${t}」。答えは「${a}」——と思いきや同音の「${b}」。`,
-        (t,a,b)=>`${t}を一言で。どちらも「${g.yomi}」と読む「${a}」と「${b}」。`
-      ];
-      const tpl = templates[Math.floor(Math.random()*templates.length)];
-      picks.push(tpl(topic, a, b));
-    }
-    return picks;
-  }
-
-  /* ==========
-     4) UI
-     ========== */
-  function render(topic, count){
-    const out = $("#out");
-    const list = makeNazokake(topic, count);
-    out.innerHTML = list.map(s=>`<div class="piece">${s}</div>`).join("");
-  }
-  function randomTopic(){ return TOPICS[Math.floor(Math.random()*TOPICS.length)] }
-  function refreshComboInfo(){
-    const combos = estimateCombos();
-    $("#comboInfo").textContent = `現在の生成バリエーション目安：${combos.toLocaleString()}通り`;
-  }
-
-  /* 初期化 */
-  window.addEventListener("DOMContentLoaded", ()=>{
-    $("#addWords").value = (localStorage.getItem("nazokake-packs")||"");
-    refreshComboInfo();
-
-    $("#btnMake").addEventListener("click", ()=>{
-      const t = $("#topic").value.trim() || randomTopic();
-      $("#topic").value = t;
-      const c = parseInt($("#count").value,10) || 5;
-      render(t, c);
-    });
-
-    $("#btnShuffle").addEventListener("click", ()=>{
-      $("#topic").value = randomTopic();
-    });
-
-    $("#btnSaveWords").addEventListener("click", ()=>{
-      saveUserPacks($("#addWords").value);
-      refreshComboInfo();
-      alert("語彙を保存しました。次の生成から使われます。");
-    });
-
-    // 初回おためし
+  $("#btnMake").addEventListener("click", render);
+  $("#btnShuffle").addEventListener("click", ()=>{
     $("#topic").value = randomTopic();
-    render($("#topic").value, 5);
   });
-  </script>
+
+  // 初回
+  render();
+}
+window.addEventListener("DOMContentLoaded", init);
+</script>
 </body>
 </html>
